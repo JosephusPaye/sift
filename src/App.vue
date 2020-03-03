@@ -15,7 +15,7 @@ export default {
   data() {
     const nested = {
       typeNull: null,
-      typeString: 'string',
+      typeString: 'ok boomer',
       typeNumber: 3.14,
       typePositiveBoolean: true,
       typeNegativeBoolean: false,
