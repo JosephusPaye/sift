@@ -1,24 +1,26 @@
-# sift
+# Sift
 
-## Project setup
-```
-yarn install
-```
+🔎 Sift is an interactive JSON viewer.
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+<!-- [![Promotional screenshot of Sift](./screenshot.png)](https://sift.netlify.com) -->
 
-### Compiles and minifies for production
-```
-yarn build
-```
+This project is part of [#CreateWeekly](https://dev.to/josephuspaye/createweekly-create-something-new-publicly-every-week-in-2020-1nh9), my attempt to create something new publicly every week in 2020.
 
-### Lints and fixes files
-```
-yarn lint
-```
+## Features
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Sift allows you to:
+
+- view JSON documents with syntax highlighting
+- Expand and collapse sections, navigate, and filter using queries
+
+## What's next
+
+- Add a dark theme
+
+## Contributing
+
+See [contribution guide](CONTRIBUTING.md).
+
+## Licence
+
+[MIT](LICENCE)

@@ -1,28 +1,29 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <Sift :json="$options" />
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import Sift from './components/Sift.vue';
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
-    HelloWorld
-  }
+    Sift,
+  },
 };
 </script>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style>
+@import './assets/tailwind.css';
+
+body {
+  color: rgba(0, 0, 0, 0.87);
+  @apply text-base;
+}
+
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
 }
 </style>
