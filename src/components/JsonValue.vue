@@ -11,7 +11,7 @@
       <span>}</span>
     </template>
 
-    <template v-if="type === 'array'">
+    <template v-else-if="type === 'array'">
       <span>[</span>
       <JsonValueChildren :children="value" is-array />
       <span>]</span>

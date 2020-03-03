@@ -65,7 +65,7 @@ export default {
   },
   props: {
     json: {
-      type: Object,
+      type: [Object, Array],
       required: true,
     },
     view: {

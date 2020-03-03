@@ -24,23 +24,25 @@ export default {
     return {
       view: 'interactive',
       theme: 'light',
-      json: {
-        ...nested,
-        nested,
-        typeSimpleArray,
-        typeComplexArray: [
-          {
-            ...nested,
-            nested,
-            typeSimpleArray,
-          },
-          {
-            ...nested,
-            nested,
-            typeSimpleArray,
-          },
-        ],
-      },
+      json: [
+        {
+          ...nested,
+          nested,
+          typeSimpleArray,
+          typeComplexArray: [
+            {
+              ...nested,
+              nested,
+              typeSimpleArray,
+            },
+            {
+              ...nested,
+              nested,
+              typeSimpleArray,
+            },
+          ],
+        },
+      ],
     };
   },
 };
