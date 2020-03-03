@@ -1,5 +1,5 @@
 <template>
-  <div class="pl-6 ml-1 border-l border-dotted border-gray-500">
+  <div class="pl-6 border-l block-border" style="margin-left: 2px">
     <template v-if="isArray">
       <JsonValue
         :key="index"

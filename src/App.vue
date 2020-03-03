@@ -1,6 +1,6 @@
 <template>
-  <div id="app" class="p-4 max-w-4xl mx-auto">
-    <Sift :json="json" :view.sync="view" />
+  <div id="app" class="p-3 md:p-6 max-w-4xl mx-auto">
+    <Sift :json="json" :view.sync="view" :theme.sync="theme" />
   </div>
 </template>
 
@@ -23,11 +23,12 @@ export default {
     const typeSimpleArray = ['ok boomer', 1, true, 3.14, null, false];
     return {
       view: 'interactive',
+      theme: 'light',
       json: {
         ...nested,
         nested,
         typeSimpleArray,
-        typeSimpleArray: [
+        typeComplexArray: [
           {
             ...nested,
             nested,

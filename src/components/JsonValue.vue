@@ -1,36 +1,36 @@
 <template>
-  <div class="pl-6 -ml-6 relative">
+  <div class="pl-6 -ml-6 relative token-default">
     <template v-if="label">
-      {{ '"' }}<span class="text-black">{{ label }}</span
+      <span class="token-key">{{ JSON.stringify(label) + '' }}</span
       >{{ '":&nbsp;' }}
     </template>
 
     <template v-if="type === 'object'">
-      <span class="font-bold">{</span>
+      <span>{</span>
       <JsonValueChildren :children="Object.entries(value)" />
-      <span class="font-bold">}</span>
+      <span>}</span>
     </template>
 
     <template v-if="type === 'array'">
-      <span class="font-bold">[</span>
+      <span>[</span>
       <JsonValueChildren :children="value" is-array />
-      <span class="font-bold">]</span>
+      <span>]</span>
     </template>
 
     <template v-else-if="type === 'string'">
-      <span class="text-green-700">{{ JSON.stringify(value) }}</span>
+      <span class="token-string">{{ JSON.stringify(value) }}</span>
     </template>
 
     <template v-else-if="type === 'number'">
-      <span class="text-blue-700 font-bold">{{ value }}</span>
+      <span class="token-number">{{ value }}</span>
     </template>
 
     <template v-else-if="type === 'boolean'">
-      <span class="text-blue-700 font-bold">{{ value }}</span>
+      <span class="token-boolean">{{ value }}</span>
     </template>
 
     <template v-else-if="type === 'null'">
-      <span class="text-blue-700 font-bold">null</span>
+      <span class="token-null">null</span>
     </template>
 
     <span v-if="!isLast">,</span>
