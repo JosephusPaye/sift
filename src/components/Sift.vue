@@ -1,50 +1,21 @@
 <template>
   <div :class="['theme-' + theme]">
-    <div class="flex">
-      <button
-        class="px-4 py-1"
-        :class="[
-          view === 'interactive' ? 'bg-blue-600 text-white' : 'bg-gray-300',
-        ]"
-        @click="$emit('update:view', 'interactive')"
-      >
-        Interactive
-      </button>
-      <button
-        class="px-4 py-1 ml-px"
-        :class="[view === 'plain' ? 'bg-blue-600 text-white' : 'bg-gray-300']"
-        @click="$emit('update:view', 'plain')"
-      >
-        Plain
-      </button>
-      <button
-        class="ml-auto px-4 py-1"
-        :class="[
-          theme === 'light' ? 'bg-blue-600 text-white' : 'bg-gray-300',
-          view === 'plain' ? 'opacity-50' : '',
-        ]"
-        :disabled="view === 'plain'"
-        @click="$emit('update:theme', 'light')"
-      >
-        Light
-      </button>
-      <button
-        class="px-4 py-1 ml-px"
-        :class="[
-          theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-gray-300',
-          view === 'plain' ? 'opacity-50' : '',
-        ]"
-        @click="$emit('update:theme', 'dark')"
-      >
-        Dark
-      </button>
+    <div class="document-search p-2 w-full">
+      <input
+        class="document-search-input w-full px-3 py-1 border border-transparent focus:outline-none"
+        :class="[filterInvalid ? 'invalid' : '']"
+        type="text"
+        placeholder="Filter or navigate..."
+        spellcheck="false"
+        v-model="filter"
+      />
     </div>
-    <div class="mt-6">
+    <div>
       <div
         v-if="view === 'interactive'"
         class="font-mono text-sm py-5 pl-8 pr-6 document-background"
       >
-        <JsonValue :value="json" is-last />
+        <JsonValue :value="jsonFiltered" is-last />
       </div>
       <pre
         v-else
@@ -56,13 +27,27 @@
 </template>
 
 <script>
+import debounce from 'debounce';
+
 import JsonValue from './JsonValue.vue';
+import { parsePath, navigate } from './json';
+
+const performFilter = debounce(function(data, filter, callback) {
+  const { valid, path } = parsePath(filter.trim());
+
+  callback({
+    valid,
+    result: valid ? navigate(data, path) : undefined,
+  });
+}, 200);
 
 export default {
   name: 'Sift',
+
   components: {
     JsonValue,
   },
+
   props: {
     json: {
       type: [Object, Array],
@@ -77,11 +62,71 @@ export default {
       default: 'dark',
     },
   },
+
+  data() {
+    return {
+      filter: '',
+      filterInvalid: false,
+      jsonFiltered: this.json,
+      hasResults: true,
+    };
+  },
+
+  watch: {
+    filter(filter) {
+      this.update(this.json, this.filter);
+    },
+
+    json() {
+      this.update(this.json, this.filter);
+    },
+  },
+
+  methods: {
+    update(data, filter) {
+      if (filter.trim().length === 0) {
+        this.filterInvalid = false;
+        this.jsonFiltered = this.json;
+        this.hasResults = true;
+        return;
+      }
+
+      performFilter(data, filter, ({ valid, result }) => {
+        if (valid) {
+          this.filterInvalid = false;
+          this.jsonFiltered = result;
+          this.hasResults = Array.isArray(this.jsonFiltered)
+            ? this.jsonFiltered.length > 0
+            : true;
+        } else {
+          this.filterInvalid = true;
+        }
+      });
+    },
+  },
 };
 </script>
 
 <style lang="scss">
 .theme-light {
+  .document-search {
+    @apply bg-gray-300;
+  }
+
+  .document-search-input {
+    @apply bg-white;
+
+    &:focus {
+      &:not(.invalid) {
+        @apply border-blue-500;
+      }
+
+      &.invalid {
+        @apply border-red-600;
+      }
+    }
+  }
+
   .document-background {
     @apply bg-gray-200;
   }
@@ -130,6 +175,19 @@ export default {
 }
 
 .theme-dark {
+  .document-search {
+    background-color: rgb(10, 10, 10);
+  }
+
+  .document-search-input {
+    background-color: rgb(30, 30, 30);
+    color: white;
+
+    &:focus {
+      @apply border-blue-500;
+    }
+  }
+
   .document-background {
     background-color: rgb(30, 30, 30);
   }

@@ -1,5 +1,44 @@
 <template>
   <div id="app" class="p-3 md:p-6 max-w-4xl mx-auto">
+    <div class="flex mb-6">
+      <button
+        class="px-4 py-1"
+        :class="[
+          view === 'interactive' ? 'bg-blue-600 text-white' : 'bg-gray-300',
+        ]"
+        @click="view = 'interactive'"
+      >
+        Interactive
+      </button>
+      <button
+        class="px-4 py-1 ml-px"
+        :class="[view === 'plain' ? 'bg-blue-600 text-white' : 'bg-gray-300']"
+        @click="view = 'plain'"
+      >
+        Plain
+      </button>
+      <button
+        class="ml-auto px-4 py-1"
+        :class="[
+          theme === 'light' ? 'bg-blue-600 text-white' : 'bg-gray-300',
+          view === 'plain' ? 'opacity-50' : '',
+        ]"
+        :disabled="view === 'plain'"
+        @click="theme = 'light'"
+      >
+        Light
+      </button>
+      <button
+        class="px-4 py-1 ml-px"
+        :class="[
+          theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-gray-300',
+          view === 'plain' ? 'opacity-50' : '',
+        ]"
+        @click="theme = 'dark'"
+      >
+        Dark
+      </button>
+    </div>
     <Sift :json="json" :view.sync="view" :theme.sync="theme" />
   </div>
 </template>
