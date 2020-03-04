@@ -42,7 +42,7 @@
     <div class="mt-6">
       <div
         v-if="view === 'interactive'"
-        class="font-mono text-sm p-5 document-background"
+        class="font-mono text-sm py-5 pl-8 pr-6 document-background"
       >
         <JsonValue :value="json" is-last />
       </div>
@@ -90,6 +90,19 @@ export default {
     @apply border-dotted border-gray-500;
   }
 
+  .block-arrow {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="rgba(0,0,0,0.15)"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+
+    &:hover,
+    &:focus.focus-visible {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="rgba(0,0,0,0.4)"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    }
+
+    &:active {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="rgba(0,0,0,0.5)"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    }
+  }
+
   .token-default {
     color: #000;
   }
@@ -110,6 +123,10 @@ export default {
   .token-key {
     color: #0451a5;
   }
+
+  .token-comment {
+    color: #008000;
+  }
 }
 
 .theme-dark {
@@ -119,6 +136,19 @@ export default {
 
   .block-border {
     @apply border-dotted border-gray-700;
+  }
+
+  .block-arrow {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="rgba(255,255,255,0.2)"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+
+    &:hover,
+    &:focus.focus-visible {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="rgba(255,255,255,0.5)"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    }
+
+    &:active {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="rgba(255,255,255,0.65)"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    }
   }
 
   .token-default {
@@ -140,6 +170,10 @@ export default {
 
   .token-key {
     color: #9cdcfe;
+  }
+
+  .token-comment {
+    color: #6a9955;
   }
 }
 </style>
