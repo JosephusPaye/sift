@@ -1,31 +1,87 @@
 <template>
   <div :class="['flex flex-col w-full h-full', 'theme-' + theme]">
-    <div class="document-search p-2 w-full">
+    <div class="document-search p-2 w-full flex">
       <input
-        class="document-search-input w-full px-3 py-1 border border-transparent focus:outline-none"
-        :class="[filterInvalid ? 'invalid' : '']"
         type="text"
-        placeholder="Filter or navigate..."
+        placeholder="Filter..."
         spellcheck="false"
+        class="document-search-input w-full px-3 py-1 border border-transparent focus:outline-none"
+        :class="[
+          filterInvalid ? 'invalid' : '',
+          view === 'plain' ? 'opacity-50' : '',
+        ]"
+        :disabled="view === 'plain'"
         v-model="filter"
       />
+      <button
+        class="flex document-help-button ml-1 px-2"
+        title="Filter help"
+        :class="[
+          view !== 'plain' && showHelp ? 'is-open' : '',
+          view === 'plain' ? 'opacity-50 cursor-default' : '',
+        ]"
+        :disabled="view === 'plain'"
+        @click="showHelp = !showHelp"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-help-circle"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </button>
     </div>
-    <div class="flex-grow overflow-x-auto overflow-y-auto">
+    <div
+      class="py-4 px-5 document-help token-default border-b"
+      v-if="view !== 'plain' && showHelp"
+    >
+      <p>
+        Enter a filter in the form:
+        <code>&lt;path&gt; &lt;query&gt;</code>. Note the separating space,
+        which is required even if <code>&lt;path&gt;</code> is empty.
+      </p>
+      <ul class="list-disc mt-2 ml-3">
+        <li class="ml-4 pl-2">
+          <code>&lt;path&gt;</code> can be any valid JS property access, e.g.
+          <code>.data.persons[0].age</code>. For array indices, you can use
+          <code>*</code> to match all items. <code>&lt;path&gt;</code> can be
+          empty, in which case you'd have a space followed by
+          <code>&lt;query&gt;</code>.
+        </li>
+        <li class="ml-4 pl-2 mt-1">
+          <code>&lt;query&gt;</code> will filter the data to show only items
+          whose value include the query.
+        </li>
+      </ul>
+    </div>
+    <div
+      v-if="view === 'interactive'"
+      class="flex-grow overflow-x-auto overflow-y-auto"
+    >
       <div
-        v-if="view === 'interactive'"
-        class="font-mono text-sm py-5 pl-8 pr-6 min-h-full document-background"
+        class="font-mono text-sm py-5 pl-8 pr-6 w-full min-h-full document-background"
       >
         <JsonValue v-if="hasResults" :value="jsonFiltered" is-last />
         <div v-else class="token-default font-sans -ml-2">
           No matching values
         </div>
       </div>
-      <pre
-        v-else
-        class="bg-gray-200 p-5 overflow-y-auto overflow-x-auto text-sm"
-        v-text="JSON.stringify(json, null, '  ')"
-      ></pre>
     </div>
+    <pre
+      v-else
+      class="flex-grow font-mono text-sm p-5 document-background token-default overflow-x-auto overflow-y-auto"
+      v-text="JSON.stringify(json, null, '  ')"
+    ></pre>
   </div>
 </template>
 
@@ -66,6 +122,7 @@ export default {
       filterInvalid: false,
       jsonFiltered: this.json,
       hasResults: true,
+      showHelp: false,
     };
   },
 
@@ -120,6 +177,28 @@ export default {
     }
   }
 
+  .document-help-button {
+    color: rgba(0, 0, 0, 0.54);
+
+    &:hover,
+    &:focus {
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    &.is-open {
+      @apply text-blue-500;
+    }
+  }
+
+  .document-help {
+    @apply border-gray-400;
+
+    code {
+      color: #e53e3e;
+    }
+  }
+
+  .document-help,
   .document-background {
     @apply bg-gray-200;
   }
@@ -185,6 +264,28 @@ export default {
     }
   }
 
+  .document-help-button {
+    color: #d4d4d4;
+
+    &:hover,
+    &:focus {
+      color: #ffffff;
+    }
+
+    &.is-open {
+      @apply text-blue-400;
+    }
+  }
+
+  .document-help {
+    @apply border-black;
+
+    code {
+      color: #ce9178;
+    }
+  }
+
+  .document-help,
   .document-background {
     background-color: rgb(30, 30, 30);
   }

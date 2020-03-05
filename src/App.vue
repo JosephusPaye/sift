@@ -19,21 +19,14 @@
       </button>
       <button
         class="ml-auto px-4 py-1"
-        :class="[
-          theme === 'light' ? 'bg-blue-600 text-white' : 'bg-gray-300',
-          view === 'plain' ? 'opacity-50' : '',
-        ]"
-        :disabled="view === 'plain'"
+        :class="[theme === 'light' ? 'bg-blue-600 text-white' : 'bg-gray-300']"
         @click="theme = 'light'"
       >
         Light
       </button>
       <button
         class="px-4 py-1 ml-px"
-        :class="[
-          theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-gray-300',
-          view === 'plain' ? 'opacity-50' : '',
-        ]"
+        :class="[theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-gray-300']"
         @click="theme = 'dark'"
       >
         Dark
