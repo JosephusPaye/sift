@@ -1,5 +1,5 @@
 <template>
-  <div :class="['theme-' + theme]">
+  <div :class="['flex flex-col w-full h-full', 'theme-' + theme]">
     <div class="document-search p-2 w-full">
       <input
         class="document-search-input w-full px-3 py-1 border border-transparent focus:outline-none"
@@ -10,21 +10,21 @@
         v-model="filter"
       />
     </div>
-    <div>
-      <template v-if="hasResults">
-        <div
-          v-if="view === 'interactive'"
-          class="font-mono text-sm py-5 pl-8 pr-6 document-background"
-        >
-          <JsonValue :value="jsonFiltered" is-last />
+    <div class="flex-grow overflow-x-auto overflow-y-auto">
+      <div
+        v-if="view === 'interactive'"
+        class="font-mono text-sm py-5 pl-8 pr-6 document-background"
+      >
+        <JsonValue v-if="hasResults" :value="jsonFiltered" is-last />
+        <div v-else class="token-default font-sans -ml-2">
+          No matching values
         </div>
-        <pre
-          v-else
-          class="bg-gray-200 p-5 overflow-y-auto overflow-x-auto text-sm"
-          v-text="JSON.stringify(json, null, '  ')"
-        ></pre>
-      </template>
-      <div v-else>No matching values</div>
+      </div>
+      <pre
+        v-else
+        class="bg-gray-200 p-5 overflow-y-auto overflow-x-auto text-sm"
+        v-text="JSON.stringify(json, null, '  ')"
+      ></pre>
     </div>
   </div>
 </template>
@@ -113,14 +113,12 @@ export default {
   .document-search-input {
     @apply bg-white;
 
-    &:focus {
-      &:not(.invalid) {
-        @apply border-blue-500;
-      }
+    &.invalid {
+      @apply border-red-600;
+    }
 
-      &.invalid {
-        @apply border-red-600;
-      }
+    &:focus:not(.invalid) {
+      @apply border-blue-500;
     }
   }
 
@@ -180,7 +178,11 @@ export default {
     background-color: rgb(30, 30, 30);
     color: white;
 
-    &:focus {
+    &.invalid {
+      @apply border-red-600;
+    }
+
+    &:focus:not(.invalid) {
       @apply border-blue-500;
     }
   }

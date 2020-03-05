@@ -1,6 +1,6 @@
 <template>
-  <div id="app" class="p-3 md:p-6 max-w-4xl mx-auto">
-    <div class="flex mb-6">
+  <div id="app" class="h-screen p-3 md:p-6 max-w-4xl mx-auto grid gap-6">
+    <div class="flex">
       <button
         class="px-4 py-1"
         :class="[
@@ -39,7 +39,9 @@
         Dark
       </button>
     </div>
-    <Sift :json="json" :view.sync="view" :theme.sync="theme" />
+    <div class="min-h-0">
+      <Sift :json="json" :view.sync="view" :theme.sync="theme" />
+    </div>
   </div>
 </template>
 
@@ -54,7 +56,7 @@ export default {
   data() {
     const nested = {
       typeNull: null,
-      typeString: 'ok boomer',
+      typeString: `To provide a more reasonable default minimum size for grid items, this specification defines that the auto value of "min-width" / "min-height" also applies an automatic minimum size in the specified axis to grid items whose overflow is visible. (The effect is analogous to the automatic minimum size imposed on flex items.)`,
       typeNumber: 3.14,
       typePositiveBoolean: true,
       typeNegativeBoolean: false,
@@ -93,6 +95,10 @@ export default {
 body {
   color: rgba(0, 0, 0, 0.87);
   @apply text-base;
+}
+
+#app {
+  grid-template-rows: 36px 1fr;
 }
 
 .js-focus-visible :focus:not(.focus-visible) {
