@@ -13,7 +13,7 @@
     <div class="flex-grow overflow-x-auto overflow-y-auto">
       <div
         v-if="view === 'interactive'"
-        class="font-mono text-sm py-5 pl-8 pr-6 document-background"
+        class="font-mono text-sm py-5 pl-8 pr-6 min-h-full document-background"
       >
         <JsonValue v-if="hasResults" :value="jsonFiltered" is-last />
         <div v-else class="token-default font-sans -ml-2">
@@ -32,11 +32,11 @@
 <script>
 import debounce from 'debounce';
 import JsonValue from './JsonValue.vue';
-import { filterByPath } from './json';
+import { filterByPathAndQuery } from '../json';
 
-const debouncedFilterByPath = debounce((data, filter, callback) => {
-  callback(filterByPath(data, filter));
-}, 200);
+const debouncedFilter = debounce((data, filter, callback) => {
+  callback(filterByPathAndQuery(data, filter));
+}, 300);
 
 export default {
   name: 'Sift',
@@ -71,26 +71,24 @@ export default {
 
   watch: {
     filter() {
-      this.performFilter(this.json, this.filter.trim());
+      this.performFilter(this.json, this.filter);
     },
 
     json() {
-      this.performFilter(this.json, this.filter.trim());
+      this.performFilter(this.json, this.filter);
     },
   },
 
   methods: {
     performFilter(data, filter) {
-      if (filter.length === 0) {
+      if (filter.trim().length === 0) {
         this.filterInvalid = false;
         this.jsonFiltered = this.json;
         this.hasResults = true;
         return;
       }
 
-      debouncedFilterByPath(data, filter, ({ valid, result }) => {
-        console.log('debouncedFilterByPath', valid, result);
-
+      debouncedFilter(data, filter, ({ valid, result }) => {
         if (valid) {
           this.filterInvalid = false;
           this.jsonFiltered = result;

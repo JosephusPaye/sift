@@ -114,8 +114,6 @@ export function filterByPath(json, filter) {
   const { valid, path } = parsePath(filter);
   let result = valid ? getValue(json, path) : undefined;
 
-  console.log('getValue', result);
-
   if (result !== undefined) {
     result = normalizeFilterByPathResult(result);
   }
@@ -138,4 +136,72 @@ function normalizeFilterByPathResult(result) {
   }
 
   return normalized;
+}
+
+export function filterByQuery(json, query) {
+  if (json === undefined) {
+    return undefined;
+  }
+
+  const type = getType(json);
+
+  if (type === 'array') {
+    const filtered = json
+      .map(value => {
+        return filterByQuery(value, query);
+      })
+      .filter(value => value !== undefined);
+    return filtered.length > 0 ? filtered : undefined;
+  } else if (type === 'object') {
+    let filtered;
+    Object.keys(json).forEach(key => {
+      const match = filterByQuery(json[key], query);
+      if (match !== undefined) {
+        filtered = filtered ?? {};
+        filtered[key] = match;
+      }
+    });
+    return filtered;
+  } else {
+    const hasMatch = String(json)
+      .toLowerCase()
+      .includes(query.toLowerCase());
+
+    return hasMatch ? json : undefined;
+  }
+}
+
+export function filterByPathAndQuery(json, filter) {
+  const [path, query] = splitAtChar(filter, ' ');
+
+  if (path && path.trim().length > 0) {
+    const filtered = filterByPath(json, path.trim());
+
+    if (filtered.valid && query && query.trim().length > 0) {
+      return {
+        valid: true,
+        result: filterByQuery(filtered.result, query.trim()),
+      };
+    }
+
+    return filtered;
+  }
+
+  if (query && query.trim().length > 0) {
+    return {
+      valid: true,
+      result: filterByQuery(json, query.trim()),
+    };
+  }
+
+  throw new Error('Invalid filter input: has no path and no query', filter);
+}
+
+function splitAtChar(string, char) {
+  const index = string.indexOf(char);
+  if (index === -1) {
+    return [string, undefined];
+  } else {
+    return [string.slice(0, index), string.slice(index)];
+  }
 }

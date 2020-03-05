@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { getType } from './json';
+import { getType } from '../json';
 import JsonValueChildren from './JsonValueChildren.vue';
 
 export default {
@@ -72,6 +72,10 @@ export default {
   },
 
   props: {
+    path: {
+      type: String,
+      default: '',
+    },
     label: String,
     value: null,
     isLast: Boolean,
