@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="h-screen p-3 md:p-6 max-w-4xl mx-auto grid gap-6">
-    <div class="flex">
+    <div class="flex min-w-0">
       <button
         class="px-4 py-1"
         :class="[
@@ -39,7 +39,7 @@
         Dark
       </button>
     </div>
-    <div class="min-h-0">
+    <div class="min-h-0 min-w-0">
       <Sift :json="json" :view.sync="view" :theme.sync="theme" />
     </div>
   </div>
@@ -56,12 +56,19 @@ export default {
   data() {
     const nested = {
       typeNull: null,
-      typeString: `To provide a more reasonable default minimum size for grid items, this specification defines that the auto value of "min-width" / "min-height" also applies an automatic minimum size in the specified axis to grid items whose overflow is visible. (The effect is analogous to the automatic minimum size imposed on flex items.)`,
+      typeString: `To provide a more reasonable default minimum size for grid items, this specification defines that the auto value of "min-width" / "min-height" also applies an \nautomatic minimum size in the specified axis to grid items whose overflow is visible. (The effect is analogous to the automatic minimum size imposed on flex items.)`,
       typeNumber: 3.14,
       typePositiveBoolean: true,
       typeNegativeBoolean: false,
     };
-    const typeSimpleArray = ['ok boomer', 1, true, 3.14, null, false];
+    const typeSimpleArray = [
+      `To provide a more reasonable default minimum size for grid items, this specification defines that the auto value of "min-width" / "min-height" also applies an \nautomatic minimum size in the specified axis to grid items whose overflow is visible. (The effect is analogous to the automatic minimum size imposed on flex items.)`,
+      1,
+      true,
+      3.14,
+      null,
+      false,
+    ];
     return {
       view: 'interactive',
       theme: 'light',

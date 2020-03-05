@@ -2,7 +2,7 @@
   <div class="pl-6 -ml-6 relative token-default">
     <button
       class="block-arrow w-3 h-3 background-cover absolute left-0 top-0 bg-center mt-1 ml-2"
-      v-if="type === 'array' || type === 'object'"
+      v-if="isCollapsible"
       :style="{ transform: `rotate(${collapsed ? '-90deg' : '0'})` }"
       @click="collapsed = !collapsed"
     ></button>
@@ -30,7 +30,12 @@
     </template>
 
     <template v-else-if="type === 'string'">
-      <span class="token-string">{{ JSON.stringify(value) }}</span>
+      <span class="token-string" v-if="!collapsed">{{
+        JSON.stringify(value)
+      }}</span>
+      <span class="token-string" v-else>{{
+        JSON.stringify(truncateMiddle(value))
+      }}</span>
     </template>
 
     <template v-else-if="type === 'number'">
@@ -47,7 +52,9 @@
 
     <span v-if="!isLast">,</span>
 
-    <span v-if="collapsed" class="token-comment whitespace-pre pl-2 select-none"
+    <span
+      v-if="collapsed && type !== 'string'"
+      class="token-comment whitespace-pre pl-2 select-none"
       >// {{ childrenCount }}</span
     >
   </div>
@@ -81,6 +88,14 @@ export default {
       return getType(this.value);
     },
 
+    isCollapsible() {
+      return (
+        this.type === 'array' ||
+        this.type === 'object' ||
+        (this.type === 'string' && this.value.length > 32)
+      );
+    },
+
     childrenCount() {
       if (this.type === 'array') {
         const count = this.value.length;
@@ -96,6 +111,10 @@ export default {
   methods: {
     pluralize(word, count) {
       return count === 1 ? word : word + 's';
+    },
+
+    truncateMiddle(string) {
+      return string.slice(0, 20) + '[…]' + string.slice(-20);
     },
   },
 };
