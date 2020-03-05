@@ -8,8 +8,8 @@
     ></button>
 
     <template v-if="label">
-      <span class="token-key">{{ JSON.stringify(label) + '' }}</span
-      >{{ '":&nbsp;' }}
+      <span class="token-key">{{ JSON.stringify(label) }}</span
+      >{{ ':&nbsp;' }}
     </template>
 
     <template v-if="type === 'object'">
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { type } from './json';
+import { getType } from './json';
 import JsonValueChildren from './JsonValueChildren.vue';
 
 export default {
@@ -78,7 +78,7 @@ export default {
 
   computed: {
     type() {
-      return type(this.value);
+      return getType(this.value);
     },
 
     childrenCount() {

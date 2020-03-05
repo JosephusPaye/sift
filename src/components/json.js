@@ -1,4 +1,4 @@
-export function type(value) {
+export function getType(value) {
   if (['string', 'number', 'boolean'].includes(typeof value)) {
     return typeof value;
   } else if (value === null) {
@@ -16,31 +16,33 @@ const identifierRegex = /^[a-zA-Z_$][0-9a-zA-Z_$]*$/;
 const arrayAccessRegex = /([a-zA-Z_$][0-9a-zA-Z_$]*)?\[(\d+|\*)\]/;
 
 export function parsePath(input) {
+  const result = {
+    valid: true,
+    path: [],
+  };
+
   if (!input.startsWith('.') && !input.startsWith('[')) {
-    return {
-      valid: false,
-      path: [],
-    };
+    result.valid = false;
+    return result;
   }
 
-  let valid = true;
-  const path = [];
+  const pathSegments = input
+    .split('.')
+    .filter(segment => segment.trim().length > 0);
 
-  const parts = input.split('.').filter(part => part.trim().length > 0);
-
-  for (const part of parts) {
-    if (identifierRegex.test(part)) {
-      path.push({
+  for (const segment of pathSegments) {
+    if (identifierRegex.test(segment)) {
+      result.path.push({
         accessType: 'object',
-        key: part,
+        key: segment,
       });
       continue;
     }
 
-    const arrayMatch = arrayAccessRegex.exec(part);
+    const arrayMatch = arrayAccessRegex.exec(segment);
 
     if (arrayMatch) {
-      path.push({
+      result.path.push({
         accessType: 'array',
         key: arrayMatch[1],
         index: arrayMatch[2] === '*' ? '*' : parseInt(arrayMatch[2], 10),
@@ -48,35 +50,32 @@ export function parsePath(input) {
       continue;
     }
 
-    valid = false;
+    result.valid = false;
     break;
   }
 
-  return {
-    valid,
-    path,
-  };
+  return result;
 }
 
-export function navigate(json, target, currentPath = '') {
-  if (!json) {
+export function getValue(json, targetPath, currentPath = '') {
+  if (json === undefined) {
     return undefined;
   }
 
-  if (target.length == 0) {
+  if (targetPath.length == 0) {
     return {
       path: currentPath,
       value: json,
     };
   }
 
-  const next = target[0];
+  const next = targetPath[0];
 
   if (next.accessType === 'object') {
     const value = json[next.key];
     return value === undefined
       ? undefined
-      : navigate(value, target.slice(1), currentPath + '.' + next.key);
+      : getValue(value, targetPath.slice(1), currentPath + '.' + next.key);
   } else if (next.accessType === 'array') {
     const value = next.key ? json[next.key] : json;
 
@@ -91,17 +90,17 @@ export function navigate(json, target, currentPath = '') {
     if (next.index === '*') {
       return value
         .map((item, index) => {
-          return navigate(
+          return getValue(
             item,
-            target.slice(1),
+            targetPath.slice(1),
             currentPath + (next.key ? `.${next.key}[${index}]` : `[${index}]`)
           );
         })
         .filter(Boolean);
     } else {
-      return navigate(
+      return getValue(
         value[next.index],
-        target.slice(1),
+        targetPath.slice(1),
         currentPath +
           (next.key ? `.${next.key}[${next.index}]` : `[${next.index}]`)
       );
@@ -111,12 +110,32 @@ export function navigate(json, target, currentPath = '') {
   return undefined;
 }
 
-// console.log(parsePath('[*].x.typeComplexArray[20].typeString'));
+export function filterByPath(json, filter) {
+  const { valid, path } = parsePath(filter);
+  let result = valid ? getValue(json, path) : undefined;
 
-// const { valid, path } = parsePath('.a[*].c[*].d');
+  console.log('getValue', result);
 
-// if (valid) {
-//   console.log(
-//     navigate({ a: [{ b: 'ok  boomer',  c:  ['ok',  'boomer'] }, { b: 'go  home  roger', c:  ['go',  'home'] }] }, path)
-//   );
-// }
+  if (result !== undefined) {
+    result = normalizeFilterByPathResult(result);
+  }
+
+  return { valid, result };
+}
+
+function normalizeFilterByPathResult(result) {
+  let normalized = undefined;
+
+  if (Array.isArray(result)) {
+    result.flat(99).forEach(({ path, value }) => {
+      normalized = normalized ?? {};
+      normalized[path] = value;
+    });
+  } else {
+    normalized = {
+      [result.path]: result.value,
+    };
+  }
+
+  return normalized;
+}

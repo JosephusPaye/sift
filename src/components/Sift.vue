@@ -11,34 +11,31 @@
       />
     </div>
     <div>
-      <div
-        v-if="view === 'interactive'"
-        class="font-mono text-sm py-5 pl-8 pr-6 document-background"
-      >
-        <JsonValue :value="jsonFiltered" is-last />
-      </div>
-      <pre
-        v-else
-        class="bg-gray-200 p-5 overflow-y-auto overflow-x-auto text-sm"
-        v-text="JSON.stringify(json, null, '  ')"
-      ></pre>
+      <template v-if="hasResults">
+        <div
+          v-if="view === 'interactive'"
+          class="font-mono text-sm py-5 pl-8 pr-6 document-background"
+        >
+          <JsonValue :value="jsonFiltered" is-last />
+        </div>
+        <pre
+          v-else
+          class="bg-gray-200 p-5 overflow-y-auto overflow-x-auto text-sm"
+          v-text="JSON.stringify(json, null, '  ')"
+        ></pre>
+      </template>
+      <div v-else>No matching values</div>
     </div>
   </div>
 </template>
 
 <script>
 import debounce from 'debounce';
-
 import JsonValue from './JsonValue.vue';
-import { parsePath, navigate } from './json';
+import { filterByPath } from './json';
 
-const performFilter = debounce(function(data, filter, callback) {
-  const { valid, path } = parsePath(filter.trim());
-
-  callback({
-    valid,
-    result: valid ? navigate(data, path) : undefined,
-  });
+const debouncedFilterByPath = debounce((data, filter, callback) => {
+  callback(filterByPath(data, filter));
 }, 200);
 
 export default {
@@ -55,7 +52,7 @@ export default {
     },
     view: {
       type: String,
-      required: true,
+      default: 'interactive',
     },
     theme: {
       type: String,
@@ -73,31 +70,31 @@ export default {
   },
 
   watch: {
-    filter(filter) {
-      this.update(this.json, this.filter);
+    filter() {
+      this.performFilter(this.json, this.filter.trim());
     },
 
     json() {
-      this.update(this.json, this.filter);
+      this.performFilter(this.json, this.filter.trim());
     },
   },
 
   methods: {
-    update(data, filter) {
-      if (filter.trim().length === 0) {
+    performFilter(data, filter) {
+      if (filter.length === 0) {
         this.filterInvalid = false;
         this.jsonFiltered = this.json;
         this.hasResults = true;
         return;
       }
 
-      performFilter(data, filter, ({ valid, result }) => {
+      debouncedFilterByPath(data, filter, ({ valid, result }) => {
+        console.log('debouncedFilterByPath', valid, result);
+
         if (valid) {
           this.filterInvalid = false;
           this.jsonFiltered = result;
-          this.hasResults = Array.isArray(this.jsonFiltered)
-            ? this.jsonFiltered.length > 0
-            : true;
+          this.hasResults = result !== undefined;
         } else {
           this.filterInvalid = true;
         }
