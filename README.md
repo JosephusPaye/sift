@@ -17,7 +17,6 @@ Sift allows you to:
 
 ## What's next
 
-- Demo: allow for loading JSON document
 - Demo: remember loaded JSON document (localstorage)
 - Demo: remember theme selection
 

@@ -17,8 +17,9 @@
       >
         Plain
       </button>
+
       <button
-        class="ml-auto px-4 py-1"
+        class="ml-3 px-4 py-1"
         :class="[theme === 'light' ? 'bg-blue-600 text-white' : 'bg-gray-300']"
         @click="theme = 'light'"
       >
@@ -31,21 +32,60 @@
       >
         Dark
       </button>
+
+      <button
+        class="px-4 py-1 ml-auto bg-gray-300"
+        :class="[jsonInputInvalid ? 'opacity-50' : '']"
+        @click="onJsonButtonClick()"
+        :disabled="jsonInputInvalid"
+      >
+        {{ showJsonInput ? 'Submit data' : 'Change data' }}
+      </button>
     </div>
     <div class="min-h-0 min-w-0">
-      <Sift :json="json" :view.sync="view" :theme.sync="theme" />
+      <Sift
+        v-if="!showJsonInput"
+        :json="json"
+        :view.sync="view"
+        :theme.sync="theme"
+      />
+      <textarea
+        v-else
+        class="text-sm w-full h-full p-3 font-mono border-2 bg-gray-100  whitespace-pre resize-none focus:outline-none"
+        :class="[
+          jsonInputInvalid
+            ? 'border-red-500 focus:border-red-500'
+            : 'border-gray-500 focus:border-blue-500',
+        ]"
+        placeholder="Enter JSON data"
+        spellcheck="false"
+        rows="12"
+        ref="input"
+        v-model="jsonInput"
+      ></textarea>
     </div>
   </div>
 </template>
 
 <script>
+import debounce from 'debounce';
 import Sift from './components/Sift.vue';
+
+const debouncedParseInput = debounce((input, callback) => {
+  try {
+    callback({ valid: true, parsed: JSON.parse(input) });
+  } catch (err) {
+    callback({ valid: false });
+  }
+}, 300);
 
 export default {
   name: 'App',
+
   components: {
     Sift,
   },
+
   data() {
     const nested = {
       typeNull: null,
@@ -62,29 +102,77 @@ export default {
       null,
       false,
     ];
+    const json = [
+      {
+        ...nested,
+        nested,
+        typeSimpleArray,
+        typeComplexArray: [
+          {
+            ...nested,
+            nested,
+            typeSimpleArray,
+          },
+          {
+            ...nested,
+            nested,
+            typeSimpleArray,
+          },
+        ],
+      },
+    ];
     return {
       view: 'interactive',
       theme: 'light',
-      json: [
-        {
-          ...nested,
-          nested,
-          typeSimpleArray,
-          typeComplexArray: [
-            {
-              ...nested,
-              nested,
-              typeSimpleArray,
-            },
-            {
-              ...nested,
-              nested,
-              typeSimpleArray,
-            },
-          ],
-        },
-      ],
+      jsonInput: JSON.stringify(json, null, '  '),
+      jsonInputParsed: {},
+      jsonInputInvalid: false,
+      showJsonInput: false,
+      json,
     };
+  },
+
+  watch: {
+    showJsonInput(show) {
+      if (show) {
+        this.$nextTick(() => {
+          this.$refs.input.focus();
+        });
+      }
+    },
+
+    jsonInput: {
+      handler(input) {
+        this.parseInput(input);
+      },
+      immediate: true,
+    },
+  },
+
+  methods: {
+    parseInput(input) {
+      if (input.trim().length === 0) {
+        return;
+      }
+
+      debouncedParseInput(input, ({ valid, parsed }) => {
+        if (!valid) {
+          this.jsonInputInvalid = true;
+        } else {
+          this.jsonInputParsed = parsed;
+          this.jsonInputInvalid = false;
+        }
+      });
+    },
+
+    onJsonButtonClick() {
+      if (!this.showJsonInput) {
+        this.showJsonInput = true;
+      } else if (!this.jsonInputInvalid) {
+        this.json = this.jsonInputParsed;
+        this.showJsonInput = false;
+      }
+    },
   },
 };
 </script>
