@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="h-screen p-3 md:p-6 max-w-4xl mx-auto grid gap-6">
+  <div id="app" class="h-screen p-3 md:p-6 max-w-6xl mx-auto grid gap-6">
     <div class="flex min-w-0">
       <button
         class="px-4 py-1"
