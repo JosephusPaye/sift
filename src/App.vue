@@ -64,6 +64,34 @@
         v-model="jsonInput"
       ></textarea>
     </div>
+
+    <div class="mx-auto">
+      <div class="text-center text-gray-500 text-sm">
+        Created by
+        <a
+          class="underline hover:text-gray-800 focus:text-gray-800"
+          href="https://twitter.com/JosephusPaye"
+          target="_blank"
+          rel="noopener"
+          >Josephus Paye II</a
+        >
+        for
+        <a
+          class="underline hover:text-gray-800 focus:text-gray-800"
+          href="https://twitter.com/JosephusPaye/status/1214853295023411200"
+          target="_blank"
+          rel="noopener"
+          >#CreateWeekly</a
+        >. View on
+        <a
+          class="underline hover:text-gray-00 focus:text-gray-800"
+          href="https://github.com/JosephusPaye/sift"
+          target="_blank"
+          rel="noopener"
+          >Github</a
+        >.
+      </div>
+    </div>
   </div>
 </template>
 
